@@ -1,0 +1,165 @@
+---
+import { company } from '../data/company';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About Us' },
+  { href: '/services', label: 'Services' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/contact', label: 'Contact Us' },
+];
+
+const isActive = (href: string) => {
+  if (href === '/') {
+    return currentPath === '/' || currentPath === '';
+  }
+  return currentPath.startsWith(href);
+};
+---
+
+<header class="sticky top-0 z-50 w-full  bg-[#07090e]/95 backdrop-blur-md transition-all duration-300">
+  <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    
+    <!-- Brand Logo -->
+    <a href="/" class="flex items-center gap-3 group" aria-label="Vivify Signage Home">
+      <img 
+        src="/images/logo.png" 
+        alt="Vivify Signage" 
+        class="h-10 w-auto max-h-12 object-contain"
+      />
+      <div class="hidden sm:flex flex-col pl-3 py-0.5">
+        <span class="text-xs font-semibold text-slate-300 group-hover:text-[#f59e0b] transition-colors">
+          Coimbatore Workshop
+        </span>
+        <span class="text-[11px] text-slate-400">
+          LED & Glow Sign Boards
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Primary Navigation">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class={`px-3 py-2 text-sm font-medium rounded-md transition-colors relative ${
+            isActive(item.href)
+              ? 'text-white bg-[#131926] border border-[#2b3954]'
+              : 'text-slate-300 hover:text-white hover:bg-[#131926]/60'
+          }`}
+        >
+          {item.label}
+          {isActive(item.href) && (
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-[#f59e0b] rounded-full "></span>
+          )}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Desktop Actions -->
+    <div class="hidden md:flex items-center gap-4">
+      <a 
+        href={`tel:${company.phoneRaw}`} 
+        class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors py-2 px-3 rounded-lg border border-transparent hover:border-[#1e283d] bg-[#0d121c]"
+        title="Call Vivify Signage"
+      >
+        <span class="flex h-2 w-2 rounded-full bg-emerald-400 "></span>
+        <span class="tracking-wide">{company.phone}</span>
+      </a>
+
+      <a
+        href="/contact#quote"
+        class="inline-flex items-center justify-center rounded-lg bg-[#f59e0b] px-4 py-2.5 text-xs font-bold font-semibold text-black transition-all hover:bg-[#fbbf24] hover: active:scale-95"
+      >
+        Get a Quote
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="flex items-center gap-2 md:hidden">
+      <a 
+        href={`tel:${company.phoneRaw}`} 
+        class="p-2 text-slate-300 hover:text-white bg-[#131926] border border-[#1e283d] rounded-lg"
+        aria-label="Call Now"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f59e0b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+      </a>
+
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        class="inline-flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#131926] border border-[#1e283d] focus:outline-none"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg id="hamburger-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobile-menu" class="hidden md:hidden  bg-[#07090e]/98 px-4 pt-3 pb-6 space-y-2">
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        class={`block px-4 py-3 rounded-lg text-base font-semibold transition-colors ${
+          isActive(item.href)
+            ? 'text-white bg-[#131926] border-l-4 border-[#f59e0b]'
+            : 'text-slate-300 hover:text-white hover:bg-[#131926]/50'
+        }`}
+      >
+        {item.label}
+      </a>
+    ))}
+
+    <div class="pt-4  space-y-3">
+      <a
+        href={`tel:${company.phoneRaw}`}
+        class="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-[#131926] text-white font-medium text-sm border border-[#2b3954]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#f59e0b]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+        </svg>
+        Call Us: {company.phone}
+      </a>
+
+      <a
+        href="/contact#quote"
+        class="flex items-center justify-center w-full py-3 rounded-lg bg-[#f59e0b] text-black font-bold text-sm font-semibold "
+      >
+        Request Free Estimate
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const hamburger = document.getElementById('hamburger-icon');
+  const close = document.getElementById('close-icon');
+
+  if (toggleBtn && menu && hamburger && close) {
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+      menu.classList.toggle('hidden');
+      hamburger.classList.toggle('hidden');
+      close.classList.toggle('hidden');
+    });
+  }
+</script>

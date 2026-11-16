@@ -1,0 +1,272 @@
+---
+import { galleryProjects, galleryCategories } from '../data/gallery';
+
+interface Props {
+  initialLimit?: number;
+  showFilters?: boolean;
+}
+
+const { initialLimit, showFilters = true } = Astro.props;
+const displayedProjects = initialLimit ? galleryProjects.slice(0, initialLimit) : galleryProjects;
+---
+
+<div class="space-y-8" id="gallery-container">
+  
+  <!-- Category Filter Tabs -->
+  {showFilters && (
+    <div class="flex items-center justify-center overflow-x-auto py-2 no-scrollbar">
+      <div class="inline-flex rounded-xl bg-[#0c1018] p-1.5 border border-[#1e283d] gap-1 ">
+        {galleryCategories.map((cat, idx) => (
+          <button
+            type="button"
+            data-category={cat.id}
+            class={`gallery-filter-btn px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              idx === 0
+                ? 'bg-[#1a2336] text-[#f59e0b]  border border-[#2b3954]'
+                : 'text-slate-400 hover:text-white hover:bg-[#131926]'
+            }`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- Portfolio Grid -->
+  <div 
+    id="gallery-grid" 
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+  >
+    {displayedProjects.map((project) => (
+      <article
+        data-category={project.category}
+        class="gallery-item group relative overflow-hidden rounded-2xl border border-[#1e283d] bg-[#0c101a] transition-all duration-300 hover:border-[#f59e0b]/50 hover: flex flex-col cursor-pointer"
+        data-title={project.title}
+        data-image={project.image}
+        data-location={project.location}
+        data-specs={project.specs}
+        data-desc={project.description}
+        data-category-label={project.categoryLabel}
+      >
+        <!-- Project Thumbnail Container -->
+        <div class="relative aspect-[4/3] w-full overflow-hidden bg-[#07090e]">
+          <img
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+            class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            onerror="this.src='/images/signage/1000504398.jpg';"
+          />
+          <div class="absolute inset-0 bg-[#0c101a]/40"></div>
+
+          <!-- Top Badge -->
+          <div class="absolute top-3 left-3">
+            <span class="inline-flex items-center rounded-md bg-[#07090e]/90 border border-[#2b3954] px-2.5 py-1 text-[10px] font-bold font-semibold text-[#f59e0b] backdrop-blur-sm">
+              {project.categoryLabel}
+            </span>
+          </div>
+
+          <!-- Hover View Lightbox Icon -->
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[2px]">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#f59e0b] text-black text-xs font-bold font-semibold  transform translate-y-2 group-hover:translate-y-0 transition-transform">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View Details
+            </span>
+          </div>
+        </div>
+
+        <!-- Project Info -->
+        <div class="p-5 flex flex-col justify-between flex-grow space-y-3">
+          <div>
+            <div class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 mb-1">
+              <svg class="h-3.5 w-3.5 text-[#f59e0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>{project.location}</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white group-hover:text-[#f59e0b] transition-colors line-clamp-1">
+              {project.title}
+            </h3>
+            <p class="text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
+              {project.specs}
+            </p>
+          </div>
+
+          <div class="pt-2  flex items-center justify-between text-xs">
+            <span class="text-slate-400 text-xs">Coimbatore Installation</span>
+            <span class="text-[#f59e0b] font-semibold flex items-center gap-1">
+              Inspect →
+            </span>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Fullscreen Architectural Lightbox Modal -->
+  <div
+    id="gallery-lightbox"
+    class="fixed inset-0 z-50 hidden bg-[#05070a]/95 backdrop-blur-md p-4 sm:p-8 flex items-center justify-center"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="lightbox-title"
+  >
+    <!-- Close button -->
+    <button
+      id="lightbox-close"
+      type="button"
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#131926] border border-[#2b3954] text-slate-400 hover:text-white hover:bg-[#1a2336] focus:outline-none"
+      aria-label="Close Lightbox"
+    >
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Modal Content Card -->
+    <div class="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#1e283d] bg-[#0c101a]  flex flex-col md:flex-row">
+      <!-- Modal Image -->
+      <div class="md:w-3/5 bg-black flex items-center justify-center min-h-[300px] max-h-[500px] overflow-hidden">
+        <img
+          id="lightbox-img"
+          src=""
+          alt=""
+          class="max-h-full max-w-full object-contain"
+        />
+      </div>
+
+      <!-- Modal Details -->
+      <div class="p-6 sm:p-8 md:w-2/5 flex flex-col justify-between space-y-6">
+        <div class="space-y-4">
+          <div>
+            <span
+              id="lightbox-category"
+              class="inline-flex items-center rounded-md bg-[#f59e0b]/10 border border-[#f59e0b]/30 px-2.5 py-1 text-[11px] font-bold font-semibold text-[#f59e0b]"
+            ></span>
+            <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
+              <svg class="h-3.5 w-3.5 text-[#f59e0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span id="lightbox-location"></span>
+            </div>
+          </div>
+
+          <h3 id="lightbox-title" class="font-display text-2xl font-bold text-white leading-tight"></h3>
+          
+          <div class="space-y-2  pt-4">
+            <h4 class="text-xs font-bold text-slate-400">Fabrication Specs</h4>
+            <p id="lightbox-specs" class="text-xs text-slate-300 leading-relaxed bg-[#07090e] p-3 rounded-lg"></p>
+          </div>
+
+          <div class="space-y-1">
+            <h4 class="text-xs font-bold font-semibold text-slate-400">Project Overview</h4>
+            <p id="lightbox-desc" class="text-xs text-slate-300 leading-relaxed"></p>
+          </div>
+        </div>
+
+        <div class="pt-4 ">
+          <a
+            id="lightbox-whatsapp"
+            href=""
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366] text-black font-bold text-xs font-semibold  hover:bg-[#20ba59] transition-all"
+          >
+            <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.076-1.528-.276-.902-.355-1.597-.91-2.072-1.428-.475-.518-.94-1.33-.94-2.193 0-.863.454-1.288.618-1.464.164-.176.359-.22.478-.22.12 0 .24.002.345.008.11.006.257-.042.403.31.15.361.512 1.25.557 1.341.045.091.075.197.015.316-.06.12-.09.195-.179.3-.09.105-.189.234-.27.315-.09.09-.185.188-.08.368.106.18.47 775 1.009 1.254.693.617 1.278.808 1.458.898.18.09.285.075.39-.045.106-.12.45-.525.57-.705.12-.18.24-.15.405-.09.165.06 1.05.495 1.23.585.18.09.3.135.345.21.045.075.045.435-.099.84z"/>
+            </svg>
+            Inquire About Similar Design
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Filter tabs logic
+  const filterBtns = document.querySelectorAll('.gallery-filter-btn');
+  const items = document.querySelectorAll('.gallery-item') as NodeListOf<HTMLElement>;
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const targetCat = btn.getAttribute('data-category');
+
+      // Update button visual states
+      filterBtns.forEach(b => {
+        b.className = 'gallery-filter-btn px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer text-slate-400 hover:text-white hover:bg-[#131926]';
+      });
+      btn.className = 'gallery-filter-btn px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer bg-[#1a2336] text-[#f59e0b]  border border-[#2b3954]';
+
+      // Filter gallery cards
+      items.forEach((item) => {
+        const itemCat = item.getAttribute('data-category');
+        if (targetCat === 'all' || itemCat === targetCat) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Lightbox modal logic
+  const lightbox = document.getElementById('gallery-lightbox');
+  const closeBtn = document.getElementById('lightbox-close');
+  const modalImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const modalTitle = document.getElementById('lightbox-title');
+  const modalCat = document.getElementById('lightbox-category');
+  const modalLoc = document.getElementById('lightbox-location');
+  const modalSpecs = document.getElementById('lightbox-specs');
+  const modalDesc = document.getElementById('lightbox-desc');
+  const modalWhatsapp = document.getElementById('lightbox-whatsapp') as HTMLAnchorElement;
+
+  items.forEach((card) => {
+    card.addEventListener('click', () => {
+      const title = card.getAttribute('data-title') || '';
+      const image = card.getAttribute('data-image') || '';
+      const location = card.getAttribute('data-location') || '';
+      const specs = card.getAttribute('data-specs') || '';
+      const desc = card.getAttribute('data-desc') || '';
+      const catLabel = card.getAttribute('data-category-label') || '';
+
+      if (modalImg) modalImg.src = image;
+      if (modalTitle) modalTitle.textContent = title;
+      if (modalCat) modalCat.textContent = catLabel;
+      if (modalLoc) modalLoc.textContent = location;
+      if (modalSpecs) modalSpecs.textContent = specs;
+      if (modalDesc) modalDesc.textContent = desc;
+
+      if (modalWhatsapp) {
+        const queryText = encodeURIComponent(`Hi Vivify Signage, I saw your project "${title}" in the gallery and would like a quote for a similar installation.`);
+        modalWhatsapp.href = `https://wa.me/917904540645?text=${queryText}`;
+      }
+
+      lightbox?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox() {
+    lightbox?.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  closeBtn?.addEventListener('click', closeLightbox);
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !lightbox?.classList.contains('hidden')) {
+      closeLightbox();
+    }
+  });
+</script>
