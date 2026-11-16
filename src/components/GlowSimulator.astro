@@ -1,0 +1,665 @@
+---
+// GlowSimulator.astro: Interactive Commercial Shopfront Signboard Simulator
+---
+
+<section 
+  id="glow-simulator"
+  class="relative py-16 lg:py-24 overflow-hidden bg-[#07090e] scroll-mt-24"
+  aria-label="Commercial Shopfront Signage Simulator"
+>
+  <!-- Architectural grid background -->
+  <div class="pointer-events-none absolute inset-0 bg-grid-pattern opacity-25"></div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    
+    <!-- Section Header & Environmental Switcher -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 lg:mb-12 gap-6">
+      <div class="space-y-3 max-w-2xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-[#f59e0b]/30 bg-[#f59e0b]/10 px-3.5 py-1 text-xs font-semibold text-[#f59e0b]">
+          <span class="flex h-1.5 w-1.5 rounded-full bg-[#f59e0b]"></span>
+          <span>Interactive Commercial Shopfront Simulator</span>
+        </div>
+        <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          Daylight Precision. Nighttime Brilliance.
+        </h2>
+        <p class="text-sm sm:text-base text-slate-300">
+          Preview your brand's illuminated architectural signage mounted directly above a luxury commercial shopfront entrance. Toggle between crisp daylight fabrication and vivid nighttime LED brilliance.
+        </p>
+      </div>
+
+      <!-- Controls: Day/Night Environmental Switcher -->
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="inline-flex rounded-xl p-1 bg-[#0d121c] border border-[#1e283d]">
+          <button
+            id="sim-mode-day"
+            type="button"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white cursor-pointer"
+            aria-pressed="false"
+          >
+            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span>Daylight View</span>
+          </button>
+          
+          <button
+            id="sim-mode-night"
+            type="button"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-[#1a2336] text-[#f59e0b] border border-[#2b3954] cursor-pointer"
+            aria-pressed="true"
+          >
+            <svg class="h-4 w-4 text-[#f59e0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <span>Night LED Glow</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shopfront Stage Container -->
+    <div data-ui class="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#1e283d] bg-[#07090e]">
+      
+      <!-- Stage Visual Canvas (16:9 Aspect Ratio) -->
+      <div id="shopfront-stage" class="relative w-full aspect-[16/9] min-h-[300px] sm:min-h-[420px] lg:min-h-[520px] overflow-hidden select-none bg-[#07090e]">
+        
+        <!-- Layer 1: Daytime Shopfront Facade Image -->
+        <img
+          id="facade-day-img"
+          src="/images/shopfront-day.jpg"
+          alt="Luxury Commercial Boutique Shopfront in Daylight"
+          class="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 opacity-0 pointer-events-none"
+        />
+
+        <!-- Layer 2: Nighttime Shopfront Facade Image -->
+        <img
+          id="facade-night-img"
+          src="/images/shopfront-night.jpg"
+          alt="Luxury Commercial Boutique Shopfront at Night with Warm Interior Illumination"
+          class="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 opacity-100 pointer-events-none"
+        />
+
+        <!-- Layer 3: Realistic Light Spill on Fascia Canopy (Night Mode Bloom) -->
+        <div
+          id="fascia-light-spill"
+          class="pointer-events-none absolute top-[9%] left-1/2 -translate-x-1/2 w-[72%] h-[20%] rounded-2xl bg-white/20 blur-3xl transition-all duration-700 opacity-100"
+        ></div>
+
+        <!-- Layer 4: Interactive Signboard Mounting Zone (Mounted on the Architectural Fascia Band) -->
+        <div 
+          id="signboard-mount"
+          class="absolute top-[10%] sm:top-[10.5%] left-1/2 -translate-x-1/2 w-[72%] sm:w-[70%] h-[16%] sm:h-[16.5%] flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2 sm:px-6"
+        >
+          <!-- Signboard Box / Backplate (Adjusts per Style) -->
+          <div 
+            id="signboard-panel"
+            class="relative w-full h-full flex flex-col items-center justify-center px-4 rounded-lg sm:rounded-xl transition-all duration-500"
+          >
+            <!-- Tagline / Micro-Header -->
+            <p 
+              id="sign-tagline"
+              class="text-[9px] sm:text-[11px] lg:text-xs font-semibold tracking-wider transition-colors duration-500 text-white mb-0.5 sm:mb-1"
+            >
+              PRECISION 3D ACRYLIC & LED FABRICATION
+            </p>
+
+            <!-- Main Dynamic Brand Wordmark -->
+            <div 
+              id="sign-letters"
+              class="font-display font-black uppercase tracking-tight transition-all duration-500 leading-none text-white glow-white-text text-2xl sm:text-4xl md:text-5xl lg:text-6xl"
+            >
+              VIVIFY SIGNAGE
+            </div>
+
+            <!-- Subtle Architectural Mounting Rivets (visible on Stencil ACP Box) -->
+            <div id="stencil-studs" class="hidden absolute inset-x-2 inset-y-2 pointer-events-none flex justify-between items-between">
+              <span class="h-1.5 w-1.5 rounded-full bg-slate-500/60"></span>
+              <span class="h-1.5 w-1.5 rounded-full bg-slate-500/60"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ambient Environmental Mode Tag (Corner Badge) -->
+        <div class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20 pointer-events-none">
+          <span 
+            id="env-badge"
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#07090e]/80 border border-[#1e283d] backdrop-blur-md text-[11px] font-medium text-slate-300"
+          >
+            <span id="env-dot" class="h-2 w-2 rounded-full bg-white"></span>
+            <span id="env-status-text">Night Lighting Simulation (Samsung 6500K Ultra-Bright Daylight LED)</span>
+          </span>
+        </div>
+
+      </div>
+
+      <!-- Interactive Customization Cockpit -->
+      <div class="bg-[#0c101a] p-5 sm:p-7 space-y-6">
+        
+        <!-- Row 1: Sign Fabrication Style Selector -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <span class="text-xs font-semibold text-slate-300">
+            Select Signboard Fabrication Style:
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              data-style="front-lit"
+              class="sim-style-btn flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border border-[#f59e0b] bg-[#f59e0b]/15 text-[#f59e0b] cursor-pointer"
+            >
+              <span>1. Front-Lit 3D Acrylic</span>
+            </button>
+            <button
+              type="button"
+              data-style="halo-lit"
+              class="sim-style-btn flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border border-[#1e283d] bg-[#131926] text-slate-400 hover:text-white cursor-pointer"
+            >
+              <span>2. Halo-Lit Reverse Metal</span>
+            </button>
+            <button
+              type="button"
+              data-style="stencil-box"
+              class="sim-style-btn flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border border-[#1e283d] bg-[#131926] text-slate-400 hover:text-white cursor-pointer"
+            >
+              <span>3. Stencil ACP Glow Box</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Live Text Input & LED Color Presets -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+          
+          <!-- Live Brand Name Input (5 cols) -->
+          <div class="lg:col-span-5">
+            <label for="sim-custom-input" class="block text-xs font-medium text-slate-400 mb-1.5">
+              Type Your Brand or Shop Name:
+            </label>
+            <div class="relative">
+              <input
+                id="sim-custom-input"
+                type="text"
+                maxlength="24"
+                value="VIVIFY SIGNAGE"
+                placeholder="Type your brand name (e.g. LUXE BOUTIQUE)"
+                class="w-full rounded-xl bg-[#07090e] border border-[#2b3954] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-[#f59e0b] focus:outline-none focus:ring-1 focus:ring-[#f59e0b] transition-colors"
+              />
+              <span id="char-counter" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">
+                14/24
+              </span>
+            </div>
+          </div>
+
+          <!-- LED Color Swatches (7 cols) -->
+          <div class="lg:col-span-7 flex flex-col justify-end">
+            <span class="block text-xs font-medium text-slate-400 mb-1.5">
+              LED Color Temperature & Tone:
+            </span>
+            <div class="flex flex-wrap items-center gap-2" aria-label="LED Color Presets">
+              <!-- 1. Pure White (Default Active) -->
+              <button
+                type="button"
+                data-color="white"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border-2 border-white px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all cursor-pointer ring-2 ring-white/40"
+                title="6500K Ultra-Bright Daylight White"
+              >
+                <span class="h-3 w-3 rounded-full bg-white shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Pure White</span>
+              </button>
+
+              <!-- 2. Warm Amber -->
+              <button
+                type="button"
+                data-color="amber"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="3000K Warm Golden Amber"
+              >
+                <span class="h-3 w-3 rounded-full bg-[#f59e0b] shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Warm Amber</span>
+              </button>
+
+              <!-- 3. Ice Cyan -->
+              <button
+                type="button"
+                data-color="cyan"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="8000K Electric Ice Cyan"
+              >
+                <span class="h-3 w-3 rounded-full bg-[#38bdf8] shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Ice Cyan</span>
+              </button>
+
+              <!-- 4. Ruby Red -->
+              <button
+                type="button"
+                data-color="red"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="625nm Ruby Crimson Red"
+              >
+                <span class="h-3 w-3 rounded-full bg-[#ef4444] shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Ruby Red</span>
+              </button>
+
+              <!-- 5. Neon Emerald Green -->
+              <button
+                type="button"
+                data-color="emerald"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="525nm Neon Emerald Green"
+              >
+                <span class="h-3 w-3 rounded-full bg-[#10b981] shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Emerald</span>
+              </button>
+
+              <!-- 6. Royal Cobalt Blue -->
+              <button
+                type="button"
+                data-color="blue"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="470nm Royal Cobalt Blue"
+              >
+                <span class="h-3 w-3 rounded-full bg-[#3b82f6] shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Cobalt Blue</span>
+              </button>
+
+              <!-- 7. Vivid Hot Magenta -->
+              <button
+                type="button"
+                data-color="magenta"
+                class="sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer"
+                title="630nm Vivid Hot Magenta"
+              >
+                <span class="h-3 w-3 rounded-full bg-[#ec4899] shrink-0"></span>
+                <span class="text-[11px] sm:text-xs">Hot Magenta</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 3: Live Engineering Specs & Direct WhatsApp Quote Dispatch -->
+        <div class="pt-4 bg-[#0a0d14] -mx-5 -mb-5 sm:-mx-7 sm:-mb-7 p-5 sm:p-7 rounded-b-2xl sm:rounded-b-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          
+          <!-- Live Specs Strip -->
+          <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
+            <span class="font-medium text-slate-300">Active Specs:</span>
+            <span id="spec-style-badge" class="px-2.5 py-1 rounded bg-[#131926] border border-[#1e283d] text-white">
+              Cast Optical Acrylic Face (30mm)
+            </span>
+            <span id="spec-led-badge" class="px-2.5 py-1 rounded bg-[#131926] border border-[#1e283d] text-white">
+              Samsung 6500K Ultra-Bright Daylight LED
+            </span>
+            <span class="px-2.5 py-1 rounded bg-[#131926] border border-[#1e283d] text-slate-400">
+              IP67 Waterproof MeanWell Driver
+            </span>
+          </div>
+
+          <!-- Instant WhatsApp Quote Button -->
+          <a
+            id="sim-quote-btn"
+            href="https://wa.me/917904540645?text=Hi%20Vivify%20Signage%2C%20I%20tested%20the%20Shopfront%20Sign%20Simulator%20for%20%22VIVIFY%20SIGNAGE%22%20(Front-Lit%203D%20Acrylic%2C%20Pure%20White%20LED)%20and%20would%20like%20a%20commercial%20quote%20for%20my%20storefront."
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#f59e0b] px-6 py-3 text-xs font-bold text-black hover:bg-[#fbbf24] transition-all active:scale-95 cursor-pointer shrink-0"
+          >
+            <span>Quote This Shopfront Sign on WhatsApp</span>
+            <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.076-1.528-.276-.902-.355-1.597-.91-2.072-1.428-.475-.518-.94-1.33-.94-2.193 0-.863.454-1.288.618-1.464.164-.176.359-.22.478-.22.12 0 .24.002.345.008.11.006.257-.042.403.31.15.361.512 1.25.557 1.341.045.091.075.197.015.316-.06.12-.09.195-.179.3-.09.105-.189.234-.27.315-.09.09-.185.188-.08.368.106.18.47.775 1.009 1.254.693.617 1.278.808 1.458.898.18.09.285.075.39-.045.106-.12.45-.525.57-.705.12-.18.24-.15.405-.09.165.06 1.05.495 1.23.585.18.09.3.135.345.21.045.075.045.435-.099.84z"/>
+            </svg>
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // DOM Elements
+  const btnDay = document.getElementById('sim-mode-day');
+  const btnNight = document.getElementById('sim-mode-night');
+  const facadeDayImg = document.getElementById('facade-day-img') as HTMLImageElement | null;
+  const facadeNightImg = document.getElementById('facade-night-img') as HTMLImageElement | null;
+  const fasciaLightSpill = document.getElementById('fascia-light-spill');
+  const signboardPanel = document.getElementById('signboard-panel');
+  const signTagline = document.getElementById('sign-tagline');
+  const signLetters = document.getElementById('sign-letters');
+  const stencilStuds = document.getElementById('stencil-studs');
+  const envDot = document.getElementById('env-dot');
+  const envStatusText = document.getElementById('env-status-text');
+  const customInput = document.getElementById('sim-custom-input') as HTMLInputElement | null;
+  const charCounter = document.getElementById('char-counter');
+  const specStyleBadge = document.getElementById('spec-style-badge');
+  const specLedBadge = document.getElementById('spec-led-badge');
+  const quoteBtn = document.getElementById('sim-quote-btn') as HTMLAnchorElement | null;
+  const styleBtns = document.querySelectorAll('.sim-style-btn');
+  const colorBtns = document.querySelectorAll('.sim-color-btn');
+
+  // State
+  let currentMode = 'night'; // 'day' | 'night'
+  let currentStyle = 'front-lit'; // 'front-lit' | 'halo-lit' | 'stencil-box'
+  let currentColor = 'white'; // 'white' | 'amber' | 'cyan' | 'red' | 'emerald' | 'blue' | 'magenta'
+
+  interface ColorMeta {
+    hex: string;
+    rgb: string;
+    label: string;
+    glowClass: string;
+  }
+
+  const colors: Record<string, ColorMeta> = {
+    white: {
+      hex: '#ffffff',
+      rgb: '255, 255, 255',
+      label: 'Samsung 6500K Ultra-Bright Daylight White LED',
+      glowClass: 'glow-white-text'
+    },
+    amber: {
+      hex: '#f59e0b',
+      rgb: '245, 158, 11',
+      label: 'Samsung 3000K Warm Golden Amber LED',
+      glowClass: 'glow-amber-text'
+    },
+    cyan: {
+      hex: '#38bdf8',
+      rgb: '56, 189, 248',
+      label: 'Samsung 8000K Electric Ice Cyan LED',
+      glowClass: 'glow-cyan-text'
+    },
+    red: {
+      hex: '#ef4444',
+      rgb: '239, 68, 68',
+      label: 'Samsung Ruby Red High-Contrast LED',
+      glowClass: 'glow-red-text'
+    },
+    emerald: {
+      hex: '#10b981',
+      rgb: '16, 185, 129',
+      label: 'Samsung 525nm Neon Emerald Green LED',
+      glowClass: 'glow-emerald-text'
+    },
+    blue: {
+      hex: '#3b82f6',
+      rgb: '59, 130, 246',
+      label: 'Samsung 470nm Royal Cobalt Blue LED',
+      glowClass: 'glow-blue-text'
+    },
+    magenta: {
+      hex: '#ec4899',
+      rgb: '236, 72, 153',
+      label: 'Samsung 630nm Vivid Hot Magenta LED',
+      glowClass: 'glow-magenta-text'
+    }
+  };
+
+  const stylesMeta: Record<string, { name: string; specs: string }> = {
+    'front-lit': {
+      name: 'Front-Lit 3D Acrylic Letters',
+      specs: 'Cast Optical Acrylic Face (30mm) • Aluminum Returns'
+    },
+    'halo-lit': {
+      name: 'Halo-Lit Reverse Metal Letters',
+      specs: 'Brushed Gunmetal Returns • 15mm Standoffs • Halo Wall Spill'
+    },
+    'stencil-box': {
+      name: 'Stencil ACP Glow Box',
+      specs: '4mm Heavy Marine ACP Panel • CNC Laser Stencil Cut'
+    }
+  };
+
+  function updateAutoFontSize(text: string) {
+    if (!signLetters) return;
+    const len = text.length;
+    // Remove previous text size classes
+    signLetters.classList.remove(
+      'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl',
+      'sm:text-3xl', 'sm:text-4xl', 'sm:text-5xl', 'sm:text-6xl',
+      'md:text-4xl', 'md:text-5xl', 'md:text-6xl',
+      'lg:text-5xl', 'lg:text-6xl', 'lg:text-7xl'
+    );
+
+    if (len <= 7) {
+      signLetters.classList.add('text-3xl', 'sm:text-5xl', 'md:text-6xl', 'lg:text-7xl');
+    } else if (len <= 14) {
+      signLetters.classList.add('text-2xl', 'sm:text-4xl', 'md:text-5xl', 'lg:text-6xl');
+    } else if (len <= 19) {
+      signLetters.classList.add('text-lg', 'sm:text-2xl', 'md:text-3xl', 'lg:text-4xl');
+    } else {
+      signLetters.classList.add('text-base', 'sm:text-xl', 'md:text-2xl', 'lg:text-3xl');
+    }
+  }
+
+  function renderVisuals() {
+    if (!signLetters || !signTagline || !signboardPanel) return;
+
+    const c = colors[currentColor];
+    const isNight = currentMode === 'night';
+
+    // 1. Facade Crossfade
+    if (facadeDayImg && facadeNightImg) {
+      if (isNight) {
+        facadeDayImg.style.opacity = '0';
+        facadeNightImg.style.opacity = '1';
+      } else {
+        facadeDayImg.style.opacity = '1';
+        facadeNightImg.style.opacity = '0';
+      }
+    }
+
+    // 2. Light Spill on Fascia
+    if (fasciaLightSpill) {
+      if (isNight) {
+        fasciaLightSpill.style.opacity = '1';
+        fasciaLightSpill.style.backgroundColor = `rgba(${c.rgb}, 0.28)`;
+      } else {
+        fasciaLightSpill.style.opacity = '0';
+      }
+    }
+
+    // 3. Reset Letter Glow & Shadows
+    signLetters.classList.remove(
+      'glow-amber-text', 'glow-cyan-text', 'glow-white-text', 'glow-red-text',
+      'glow-emerald-text', 'glow-blue-text', 'glow-magenta-text'
+    );
+    signLetters.style.textShadow = '';
+    signLetters.style.filter = '';
+    signboardPanel.style.backgroundColor = 'transparent';
+    signboardPanel.style.border = 'none';
+    signboardPanel.style.boxShadow = 'none';
+
+    // 4. Style-Specific Illumination Logic
+    if (currentStyle === 'front-lit') {
+      if (stencilStuds) stencilStuds.classList.add('hidden');
+
+      if (isNight) {
+        // Glowing acrylic face in the exact selected LED color with radiant edge bloom
+        signLetters.style.color = c.hex;
+        signLetters.classList.add(c.glowClass);
+        signLetters.style.textShadow = `0 0 10px rgba(${c.rgb}, 0.95), 0 0 25px rgba(${c.rgb}, 0.85), 0 0 50px rgba(${c.rgb}, 0.65), 0 0 80px rgba(${c.rgb}, 0.4), 0 4px 12px rgba(0,0,0,0.9)`;
+        signTagline.style.color = c.hex;
+        signTagline.style.opacity = '1';
+      } else {
+        // Daytime: physical colored cast acrylic letters with bevel & sun shadow
+        signLetters.style.color = c.hex;
+        signLetters.style.textShadow = '0 1px 0 rgba(255,255,255,0.4), 0 2px 0 rgba(0,0,0,0.2), 0 4px 8px rgba(0,0,0,0.5)';
+        signTagline.style.color = c.hex;
+        signTagline.style.opacity = '0.9';
+      }
+    } else if (currentStyle === 'halo-lit') {
+      if (stencilStuds) stencilStuds.classList.add('hidden');
+
+      if (isNight) {
+        // Colored letter face with radiant 360-degree reverse halo wall spill
+        signLetters.style.color = c.hex;
+        signLetters.style.textShadow = `0 0 16px rgba(${c.rgb}, 0.9), 0 0 32px rgba(${c.rgb}, 0.6)`;
+        signLetters.style.filter = `drop-shadow(0 0 12px rgba(${c.rgb}, 0.95)) drop-shadow(0 0 28px rgba(${c.rgb}, 0.75)) drop-shadow(0 0 50px rgba(${c.rgb}, 0.4))`; /* taste-skill-ignore */
+        signTagline.style.color = c.hex;
+        signTagline.style.opacity = '0.9';
+      } else {
+        // Daytime: bold colored reverse metal letters with drop shadow
+        signLetters.style.color = c.hex;
+        signLetters.style.textShadow = '0 1px 0 rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.6)';
+        signTagline.style.color = c.hex;
+        signTagline.style.opacity = '0.8';
+      }
+    } else if (currentStyle === 'stencil-box') {
+      if (stencilStuds) stencilStuds.classList.remove('hidden');
+
+      if (isNight) {
+        // Heavy dark ACP panel with push-through glowing colored letters
+        signboardPanel.style.backgroundColor = 'rgba(7, 9, 14, 0.92)';
+        signboardPanel.style.border = '1px solid rgba(255, 255, 255, 0.12)';
+        signboardPanel.style.boxShadow = `0 0 30px rgba(${c.rgb}, 0.3)`;
+        signLetters.style.color = c.hex;
+        signLetters.style.textShadow = `0 0 14px rgba(${c.rgb}, 1), 0 0 35px rgba(${c.rgb}, 0.8), 0 0 65px rgba(${c.rgb}, 0.5)`;
+        signTagline.style.color = c.hex;
+      } else {
+        // Daytime: sleek matte black composite panel with laser cut colored typography
+        signboardPanel.style.backgroundColor = 'rgba(15, 23, 42, 0.9)';
+        signboardPanel.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+        signLetters.style.color = c.hex;
+        signLetters.style.textShadow = 'inset 0 2px 4px rgba(0,0,0,0.5)';
+        signTagline.style.color = c.hex;
+      }
+    }
+
+    // 5. Environmental Status Badge
+    if (envDot && envStatusText) {
+      if (isNight) {
+        envDot.style.backgroundColor = c.hex;
+        envDot.style.boxShadow = `0 0 8px ${c.hex}`;
+        envStatusText.textContent = `Night Lighting Simulation (${colors[currentColor].label})`;
+      } else {
+        envDot.style.backgroundColor = '#94a3b8';
+        envDot.style.boxShadow = 'none';
+        envStatusText.textContent = 'Daylight Inspection Mode (LEDs Off)';
+      }
+    }
+
+    // 6. Active Spec Badges
+    if (specStyleBadge) {
+      specStyleBadge.textContent = stylesMeta[currentStyle].specs;
+    }
+    if (specLedBadge) {
+      specLedBadge.textContent = isNight ? c.label : 'Daylight Structural Inspection';
+      specLedBadge.style.color = isNight ? c.hex : '#94a3b8';
+    }
+
+    // 7. Update Day/Night Toggle Buttons
+    if (btnDay && btnNight) {
+      if (isNight) {
+        btnNight.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-[#1a2336] text-[#f59e0b] border border-[#2b3954] cursor-pointer';
+        btnNight.setAttribute('aria-pressed', 'true');
+        btnDay.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white cursor-pointer';
+        btnDay.setAttribute('aria-pressed', 'false');
+      } else {
+        btnDay.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-[#cbd5e1] text-black border border-slate-400 cursor-pointer';
+        btnDay.setAttribute('aria-pressed', 'true');
+        btnNight.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white cursor-pointer';
+        btnNight.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    // 8. Dynamic WhatsApp Quote Link
+    updateQuoteLink();
+  }
+
+  function updateQuoteLink() {
+    if (!quoteBtn) return;
+    const textVal = customInput ? customInput.value.trim() : 'VIVIFY SIGNAGE';
+    const brand = textVal.length > 0 ? textVal : 'VIVIFY SIGNAGE';
+    const styleName = stylesMeta[currentStyle].name;
+    const colorName = colors[currentColor].label;
+    const modeName = currentMode === 'night' ? 'Night LED Illumination' : 'Daylight View';
+
+    const msg = encodeURIComponent(
+      `Hi Vivify Signage, I customized a commercial shopfront sign on your simulator:\n` +
+      `• Brand / Shop: "${brand}"\n` +
+      `• Fabrication Style: ${styleName}\n` +
+      `• Lighting Spec: ${colorName}\n` +
+      `• Mode Tested: ${modeName}\n\n` +
+      `Please provide an estimated quote and fabrication timeline for installation in Coimbatore.`
+    );
+    quoteBtn.href = `https://wa.me/917904540645?text=${msg}`;
+  }
+
+  // Event Listeners
+  btnDay?.addEventListener('click', () => {
+    currentMode = 'day';
+    renderVisuals();
+  });
+
+  btnNight?.addEventListener('click', () => {
+    currentMode = 'night';
+    renderVisuals();
+  });
+
+  // Style Buttons
+  styleBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const style = btn.getAttribute('data-style');
+      if (style && stylesMeta[style]) {
+        currentStyle = style;
+        styleBtns.forEach(b => {
+          b.className = 'sim-style-btn flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border border-[#1e283d] bg-[#131926] text-slate-400 hover:text-white cursor-pointer';
+        });
+        btn.className = 'sim-style-btn flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border border-[#f59e0b] bg-[#f59e0b]/15 text-[#f59e0b] cursor-pointer';
+        renderVisuals();
+      }
+    });
+  });
+
+  // Color Button Style Mapping
+  const colorBtnClasses: Record<string, { border: string; ring: string }> = {
+    white: { border: 'border-white', ring: 'ring-white/40' },
+    amber: { border: 'border-[#f59e0b]', ring: 'ring-[#f59e0b]/40' },
+    cyan: { border: 'border-[#38bdf8]', ring: 'ring-[#38bdf8]/40' },
+    red: { border: 'border-[#ef4444]', ring: 'ring-[#ef4444]/40' },
+    emerald: { border: 'border-[#10b981]', ring: 'ring-[#10b981]/40' },
+    blue: { border: 'border-[#3b82f6]', ring: 'ring-[#3b82f6]/40' },
+    magenta: { border: 'border-[#ec4899]', ring: 'ring-[#ec4899]/40' }
+  };
+
+  // Color Buttons
+  colorBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const color = btn.getAttribute('data-color');
+      if (color && colors[color]) {
+        currentColor = color;
+        colorBtns.forEach(b => {
+          b.className = 'sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border border-[#1e283d] px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-all cursor-pointer';
+        });
+        const meta = colorBtnClasses[color];
+        btn.className = `sim-color-btn relative h-9.5 rounded-xl bg-[#07090e] border-2 ${meta.border} px-2.5 sm:px-3 flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all cursor-pointer ring-2 ${meta.ring}`;
+        renderVisuals();
+      }
+    });
+  });
+
+  // Live Input Typing & Auto Font Size
+  customInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    const val = target.value;
+    const trimmed = val.trim();
+    const displayVal = trimmed.length > 0 ? trimmed : 'VIVIFY SIGNAGE';
+
+    if (signLetters) {
+      signLetters.textContent = displayVal;
+      updateAutoFontSize(displayVal);
+    }
+
+    if (charCounter) {
+      charCounter.textContent = `${val.length}/24`;
+    }
+
+    updateQuoteLink();
+  });
+
+  // Initial Execution
+  if (customInput) {
+    updateAutoFontSize(customInput.value);
+  }
+  renderVisuals();
+</script>
