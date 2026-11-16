@@ -1,0 +1,35 @@
+---
+import { company } from '../data/company';
+
+interface Props {
+  customMessage?: string;
+}
+
+const { customMessage } = Astro.props;
+
+const targetUrl = customMessage 
+  ? `https://wa.me/917904540645?text=${encodeURIComponent(customMessage)}`
+  : company.whatsappLink;
+---
+
+<aside 
+  class="fixed bottom-6 right-6 z-40 flex items-center group"
+  aria-label="Direct WhatsApp Contact"
+>
+  <div class="hidden md:flex items-center mr-3 px-3 py-1.5 rounded-full bg-[#0d121c] text-xs font-medium text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+    <span class="flex h-2 w-2 rounded-full bg-[#25D366] mr-2 "></span>
+    Chat with Signage Expert
+  </div>
+
+  <a
+    href={targetUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-black  transition-all duration-300 hover:scale-110 hover: active:scale-95 focus:outline-none focus:ring-4 focus:ring-[#25D366]/40"
+    aria-label="Chat with Vivify Signage on WhatsApp"
+  >
+    <svg class="h-7 w-7 fill-current" viewBox="0 0 24 24">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.634.076-1.528-.276-.902-.355-1.597-.91-2.072-1.428-.475-.518-.94-1.33-.94-2.193 0-.863.454-1.288.618-1.464.164-.176.359-.22.478-.22.12 0 .24.002.345.008.11.006.257-.042.403.31.15.361.512 1.25.557 1.341.045.091.075.197.015.316-.06.12-.09.195-.179.3-.09.105-.189.234-.27.315-.09.09-.185.188-.08.368.106.18.47 775 1.009 1.254.693.617 1.278.808 1.458.898.18.09.285.075.39-.045.106-.12.45-.525.57-.705.12-.18.24-.15.405-.09.165.06 1.05.495 1.23.585.18.09.3.135.345.21.045.075.045.435-.099.84z"/>
+    </svg>
+  </a>
+</aside>

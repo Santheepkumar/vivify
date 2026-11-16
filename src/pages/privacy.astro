@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { company } from '../data/company';
+---
+
+<Layout
+  title="Privacy Policy | Vivify Signage Coimbatore"
+  description="Privacy Policy for Vivify Signage, Coimbatore, Tamil Nadu."
+>
+  <section class="py-20 lg:py-28 bg-[#07090e]">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <div class="space-y-3">
+        <h1 class="font-display text-3xl sm:text-5xl font-black text-white">Privacy Policy</h1>
+        <p class="text-xs text-slate-400">Effective Date: January 1, 2026 • Vivify Signage, Ganapathy, Coimbatore</p>
+      </div>
+
+      <div class="space-y-6 text-sm text-slate-300 leading-relaxed  pt-8">
+        <p>
+          At Vivify Signage ("we", "us", or "our"), respecting your privacy is foundational to our business. This Privacy Policy outlines how we collect, use, and protect information when you visit our website or submit project inquiries.
+        </p>
+
+        <h2 class="font-display text-xl font-bold text-white pt-4">1. Information We Collect</h2>
+        <p>
+          When you request a quotation or contact us via our website forms or WhatsApp, we collect information you provide directly, including your name, company name, phone number, email address, physical location for site survey, and architectural drawings or signage specifications.
+        </p>
+
+        <h2 class="font-display text-xl font-bold text-white pt-4">2. How We Use Your Information</h2>
+        <p>
+          We use the information collected solely to prepare accurate cost estimates, schedule on-site physical measurements, fabricate custom signage according to your specifications, coordinate delivery and mounting, and provide ongoing maintenance support. We never sell, lease, or share your contact data with third-party advertisers.
+        </p>
+
+        <h2 class="font-display text-xl font-bold text-white pt-4">3. Direct Contact & WhatsApp Inquiries</h2>
+        <p>
+          Inquiries initiated via WhatsApp are handled directly by our fabrication team in Coimbatore under standard WhatsApp end-to-end encryption protocols.
+        </p>
+
+        <h2 class="font-display text-xl font-bold text-white pt-4">4. Contact Information</h2>
+        <p>
+          If you have questions regarding this Privacy Policy or your data, you may reach us at:
+        </p>
+        <div class="bg-[#0c101a] p-4 rounded-xl border border-[#1e283d] space-y-1 text-xs">
+          <p class="font-bold text-white">{company.legalName}</p>
+          <p>{company.address.full}</p>
+          <p>Phone: {company.phone}</p>
+          <p>Email: {company.email}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
