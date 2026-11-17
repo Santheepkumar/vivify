@@ -40,7 +40,7 @@ export const company: CompanyInfo = {
   legalName: "Vivify Signage Coimbatore",
   tagline: "Architectural Signage & Precision LED Glow Sign Boards",
   shortDescription: "Coimbatore's trusted manufacturer of LED Glow Sign Boards, 3D Acrylic Letters, ACP Architectural Elevation, and CNC routed architectural displays.",
-  fullDescription: "VIVIFY SIGNAGE is one of the premier LED & Glow Sign Boards makers in Coimbatore, Tamil Nadu. We specialize in exterior ACP elevation finishing, precision 3D acrylic illuminated letters, commercial shopfront boards, and custom architectural signage crafted to elevate brand presence.",
+  fullDescription: "VIVIFY SIGNAGE is a premier LED & Glow Sign Board Manufacturer in Coimbatore, Tamil Nadu. We specialize in exterior ACP elevation finishing, precision 3D acrylic illuminated letters, commercial shopfront boards, and custom architectural signage crafted to elevate brand presence.",
   phone: "+91 79045 40645",
   phoneRaw: "+917904540645",
   whatsapp: "917904540645",

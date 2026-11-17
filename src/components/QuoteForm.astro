@@ -32,9 +32,11 @@ import { company } from '../data/company';
           id="quote-name"
           name="name"
           required
+          minlength="2"
           placeholder="e.g. Anand Kumar (Apex Tech)"
-          class="w-full rounded-xl bg-[#07090e] border border-[#2b3954] px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#f59e0b] focus:outline-none focus:ring-1 focus:ring-[#f59e0b]"
+          class="w-full rounded-xl bg-[#07090e] border border-[#2b3954] px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#f59e0b] focus:outline-none focus:ring-1 focus:ring-[#f59e0b] transition-colors"
         />
+        <p id="quote-name-error" class="hidden text-[11px] text-rose-400 font-medium mt-1"></p>
       </div>
 
       <!-- Phone -->
@@ -47,9 +49,13 @@ import { company } from '../data/company';
           id="quote-phone"
           name="phone"
           required
+          minlength="10"
+          maxlength="15"
+          pattern="[0-9+\\s\\-()]{10,15}"
           placeholder="e.g. +91 98765 43210"
-          class="w-full rounded-xl bg-[#07090e] border border-[#2b3954] px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#f59e0b] focus:outline-none focus:ring-1 focus:ring-[#f59e0b]"
+          class="w-full rounded-xl bg-[#07090e] border border-[#2b3954] px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#f59e0b] focus:outline-none focus:ring-1 focus:ring-[#f59e0b] transition-colors"
         />
+        <p id="quote-phone-error" class="hidden text-[11px] text-rose-400 font-medium mt-1"></p>
       </div>
     </div>
 
@@ -137,16 +143,93 @@ import { company } from '../data/company';
 <script>
   const form = document.getElementById('quote-inquiry-form') as HTMLFormElement | null;
   const feedback = document.getElementById('quote-feedback');
+  const nameInput = document.getElementById('quote-name') as HTMLInputElement | null;
+  const phoneInput = document.getElementById('quote-phone') as HTMLInputElement | null;
+  const nameError = document.getElementById('quote-name-error');
+  const phoneError = document.getElementById('quote-phone-error');
+
+  function clearErrors() {
+    if (nameError) {
+      nameError.textContent = '';
+      nameError.classList.add('hidden');
+    }
+    if (nameInput) {
+      nameInput.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+    }
+    if (phoneError) {
+      phoneError.textContent = '';
+      phoneError.classList.add('hidden');
+    }
+    if (phoneInput) {
+      phoneInput.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+    }
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      if (nameError && !nameError.classList.contains('hidden')) {
+        nameError.textContent = '';
+        nameError.classList.add('hidden');
+        nameInput.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+      }
+    });
+  }
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      if (phoneError && !phoneError.classList.contains('hidden')) {
+        phoneError.textContent = '';
+        phoneError.classList.add('hidden');
+        phoneInput.classList.remove('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+      }
+    });
+  }
 
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      clearErrors();
+
       const formData = new FormData(form);
-      const name = formData.get('name') || '';
-      const phone = formData.get('phone') || '';
+      const name = (formData.get('name') as string || '').trim();
+      const phone = (formData.get('phone') as string || '').trim();
       const service = formData.get('service') || '';
       const env = formData.get('environment') || '';
       const details = formData.get('details') || '';
+
+      let hasError = false;
+
+      // Validate name
+      if (!name || name.length < 2) {
+        if (nameError && nameInput) {
+          nameError.textContent = 'Please enter your name or business name (min 2 characters).';
+          nameError.classList.remove('hidden');
+          nameInput.classList.add('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+          nameInput.focus();
+        }
+        hasError = true;
+      }
+
+      // Validate phone number: must be at least 10 digits
+      const digitsOnly = phone.replace(/\D/g, '');
+      if (!phone || digitsOnly.length < 10 || digitsOnly.length > 15) {
+        if (phoneError && phoneInput) {
+          phoneError.textContent = 'Please enter a valid 10-digit phone or WhatsApp number.';
+          phoneError.classList.remove('hidden');
+          phoneInput.classList.add('border-rose-500', 'focus:border-rose-500', 'focus:ring-rose-500');
+          if (!hasError) {
+            phoneInput.focus();
+          }
+        }
+        hasError = true;
+      }
+
+      if (hasError) {
+        if (feedback) {
+          feedback.classList.add('hidden');
+        }
+        return;
+      }
 
       const text = encodeURIComponent(
         `*New Signage Project Quote Request*\n` +

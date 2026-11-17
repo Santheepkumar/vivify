@@ -30,6 +30,8 @@
     background-color: var(--color-canvas);
     color: #f1f5f9;
     color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

@@ -14,8 +14,8 @@ const displayedProjects = initialLimit ? galleryProjects.slice(0, initialLimit) 
   
   <!-- Category Filter Tabs -->
   {showFilters && (
-    <div class="flex items-center justify-center overflow-x-auto py-2 no-scrollbar">
-      <div class="inline-flex rounded-xl bg-[#0c1018] p-1.5 border border-[#1e283d] gap-1 ">
+    <div class="flex items-center justify-start sm:justify-center overflow-x-auto py-2 px-2 sm:px-0 no-scrollbar w-full">
+      <div class="inline-flex shrink-0 rounded-xl bg-[#0c1018] p-1.5 border border-[#1e283d] gap-1">
         {galleryCategories.map((cat, idx) => (
           <button
             type="button"
